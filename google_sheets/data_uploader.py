@@ -25,7 +25,7 @@ def upload_sheets_data() -> pd.DataFrame:
 
     data_from_sheet = result.get('values', [])
 
-    return pd.DataFrame(data=data_from_sheet[1:], columns=[0])
+    return pd.DataFrame(data=data_from_sheet[1:], columns=data_from_sheet[0])
 
 
 # array = {'values': [[5, 6, None, 100], ['=SUM(A1:A4)', '=SUM(B1:B4)']]}

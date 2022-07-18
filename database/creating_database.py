@@ -4,13 +4,14 @@ from sqlalchemy.orm import declarative_base
 from sqlalchemy import Column, Integer, Float, Date
 import os
 
-SQLALCHEMY_DATABASE_URI = os.getenv("DATABASE_URL")
-engine = create_engine(SQLALCHEMY_DATABASE_URI, echo=True)
+#SQLALCHEMY_DATABASE_URI = os.getenv("DATABASE_URL")
+#engine = create_engine(SQLALCHEMY_DATABASE_URI, echo=True)
+engine = create_engine("sqlite:///order.db")
 Base = declarative_base()
 
 
 class Order(Base):
-    __tablename__ = "heroes"
+    __tablename__ = "orders"
     __table_args__ = {'extend_existing': True}
 
     id = Column(Integer, primary_key=True)
