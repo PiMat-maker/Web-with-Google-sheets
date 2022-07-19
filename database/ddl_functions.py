@@ -1,7 +1,8 @@
 import psycopg2
 from sqlalchemy.orm import sessionmaker
-from creating_database import Order
+from database.creating_database import Order
 import pandas as pd
+from datetime import datetime
 
 
 def add_instance(Session, instance: Order) -> None:
@@ -12,24 +13,28 @@ def add_instance(Session, instance: Order) -> None:
 
 def delete_instance_by_id(Session, instance_id: int, instance_type) -> None:
     with Session() as session:
-        session.query(instance_type).filter(instance_type.id == instance_id).delete()
+        instance = session.query(instance_type).filter(instance_type.id == int(instance_id)).first()
+
+        if instance:
+            session.delete(instance)
+
         session.commit()
 
 
 def add_order(engine, currency_rate_dollar_to_russian_ruble: float, order_info: dict) -> None:
     Session = sessionmaker(bind=engine)
-    order_price_in_rubles = order_info["price dollars"] * currency_rate_dollar_to_russian_ruble
+    order_price_in_rubles = round(float(order_info["price_in_dollars"]) * currency_rate_dollar_to_russian_ruble, 2)
     order_instance: Order = Order(
-        id=order_info["order number"],
-        delivery_date_deadline=order_info["delivery date"],
-        price_in_dollars=order_info["price dollars"],
+        id=int(order_info["id"]),
+        delivery_date_deadline=order_info["delivery_date_deadline"],
+        price_in_dollars=float(order_info["price_in_dollars"]),
         price_in_rubles=order_price_in_rubles
     )
 
     add_instance(Session, order_instance)
 
 
-def delete_order_by_id(engine, order_id:int) -> None:
+def delete_order_by_id(engine, order_id: int) -> None:
     Session = sessionmaker(bind=engine)
 
     delete_instance_by_id(Session, order_id, Order)
@@ -38,12 +43,16 @@ def delete_order_by_id(engine, order_id:int) -> None:
 def get_orders(engine) -> pd.DataFrame:
     Session = sessionmaker(bind=engine)
     with Session() as session:
-        orders: list[Order] = session.query(Order)
+        orders: list[Order] = session.query(Order).all()
 
-    return pd.DataFrame(data=orders, columns=Order.)
+    orders_in_dict = [order.__dict__ for order in orders]
+    print(orders_in_dict)
 
+    if len(orders) > 0:
+        orders_df = pd.DataFrame(orders_in_dict).drop(["_sa_instance_state"], axis=1)
+        return orders_df
 
-def update_order_by_id(engine, id: int, new_instance: Order) -> None:
+    return pd.DataFrame(columns=["id", "delivery_date_deadline", "price_in_dollars", "price_in_rubles"])
 
 
 def main():

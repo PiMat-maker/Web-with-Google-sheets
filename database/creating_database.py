@@ -1,12 +1,12 @@
 import psycopg2
-from sqlalchemy import create_engine, Table
+from sqlalchemy import create_engine
 from sqlalchemy.orm import declarative_base
 from sqlalchemy import Column, Integer, Float, Date
 import os
 
 #SQLALCHEMY_DATABASE_URI = os.getenv("DATABASE_URL")
 #engine = create_engine(SQLALCHEMY_DATABASE_URI, echo=True)
-engine = create_engine("sqlite:///order.db")
+ENGINE = create_engine("sqlite:///order.db")
 Base = declarative_base()
 
 
@@ -25,8 +25,8 @@ class Order(Base):
 
 
 def create_db():
-    Base.metadata.drop_all(engine)
-    Base.metadata.create_all(engine)
+    Base.metadata.drop_all(ENGINE)
+    Base.metadata.create_all(ENGINE)
 
 
 if __name__ == "__main__":

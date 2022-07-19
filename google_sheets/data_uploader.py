@@ -1,7 +1,6 @@
 import os.path
 from googleapiclient.discovery import build
 from google.oauth2 import service_account
-import requests
 import pandas as pd
 
 SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
@@ -23,7 +22,7 @@ def upload_sheets_data() -> pd.DataFrame:
     result = service.get(spreadsheetId=SAMPLE_SPREADSHEET_ID,
                          range=SAMPLE_RANGE_NAME).execute()
 
-    data_from_sheet = result.get('values', [])
+    data_from_sheet = result.get('values', ())
 
     return pd.DataFrame(data=data_from_sheet[1:], columns=data_from_sheet[0])
 
